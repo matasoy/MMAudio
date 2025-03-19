@@ -1,4 +1,97 @@
 <div align="center">
+  <h2>Windows 10'a MMAudio Kurulumu ve Çalıştırma Adımları</h2>
+</div>
+
+---
+
+<h3>🔹 Önce <a href="https://winpython.github.io/">WinPython</a> kurun, aşağıdaki adımlardaki tüm işlemler "WinPython Powershell Prompt.exe" çalıştırılarak yapıldı. </h3>
+<h3>🏗 Başlangıç olarak WinPython üzerinden zip dosyasını indirin dot'lı olan zip yeterli, MMAudioPython isimli bir klasöre açın (WinPython Powershell Prompt.exe ana dizinde olacak şekilde). Aşağıdaki komutlar için 3.12.9 versiyonu sorun çıkarmadı</h3>
+<pre>
+Winpython64-3.12.9.0dot.zip
+</pre>
+
+
+
+<h3>🏗 1. Sanal Ortam (Environment) Oluşturma</h3>
+<pre>
+#WinPython Powershell Prompt.exe yi çalıştırın
+cd H:\AI\MMAudioPython
+python -m venv mmaudio_env
+</pre>
+
+<h3>📥 2. GitHub'dan MMAudio Deposu İndirme</h3>
+<pre>
+cd H:\AI\MMAudioPython\mmaudio_env
+git clone https://github.com/hkchengrex/MMAudio.git
+</pre>
+
+<h3>📦 3. Gerekli Python Paketlerini Yükleme</h3>
+<pre>
+pip install torch torchvision torchaudio opencv-python numpy scipy librosa soundfile tqdm moviepy matplotlib ffmpeg-python colorlog av torchdiffeq einops open-clip-torch omegaconf
+</pre>
+
+<h3>💾 4. Hugging Face Model Önbellek Yolunu Değiştirme</h3>
+<p>huggingfacete yer alan model dosyalarını (models--apple--DFN5B-CLIP-ViT-H-14-384, models--nvidia--bigvgan_v2_44khz_128band_512x, vb) projenizin kendi klasöründe tutmak için H:\AI\MMAudioPython\mmaudio_env\Scripts\Activate.ps1 dosyasını aç ve son satıra model dosyalarının kaydolması gereken yolu yapıştır (ben models\huggingface klasörlerini oluşturdum), aksi halde C:\Users\%USERPROFILE%\.cache\huggingface\hub klasörüne inecektir. İnmesinde bir sakınca yok, ama C de yer kaplamasını istemeyenler için bir seçenek.</p>
+<pre>
+$Env:HUGGINGFACE_HUB_CACHE="H:\AI\MMAudioPython\models\huggingface"
+</pre>
+
+<h3>🚀 5. Sanal Ortamı (Environment) Aktif Hale Getirme</h3>
+<pre>
+H:\AI\MMAudioPython\mmaudio_env\Scripts\Activate.ps1
+</pre>
+
+<h3>💻 6. Demo Çalıştırma</h3>
+<p>GitHub'dan indirilen klasördeki <code>demo.py</code> dosyasını çalıştır.</p>
+<pre>
+cd mmaudio_env\MMAudio
+python demo.py
+</pre>
+
+<h3>📂 7. Model Dosyalarının Otomatik Olarak İndirilmesi</h3>
+<p>Aşağıdaki model dosyaları indirilip ilgili klasörlere yerleştirilecektir:</p>
+<ul>
+  <li><code>H:\AI\MMAudioPython\mmaudio_env\MMAudio\weights\mmaudio_large_44k_v2.pth</code></li>
+  <li><code>H:\AI\MMAudioPython\mmaudio_env\MMAudio\ext_weights\v1-44.pth</code></li>
+  <li><code>H:\AI\MMAudioPython\mmaudio_env\MMAudio\ext_weights\synchformer_state_dict.pth</code></li>
+</ul>
+
+<h3>🎮 8. NVIDIA GPU Kullanımı (Opsiyonel)</h3>
+<p>Eğer <strong>NVIDIA grafik kartını</strong> kullanmak istiyorsan ve işlem <strong>CPU</strong> üzerinde yapılıyorsa, aşağıdaki komutu veya <a href="https://pytorch.org/get-started/locally/">PyTorch sitesi</a> üzerinden uygun CUDA versiyonunu kullanarak yükleme yap.</p>
+<pre>
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+</pre>
+
+<h3>🔍 9. Mevcut Torch Kurulumunu Kontrol Et</h3>
+<p>Eğer <strong>"Requirement already satisfied"</strong> mesajını aldıysan, mevcut sürümün CPU versiyonu olabilir. Aşağıdaki komutla bunu kontrol edebilirsin:</p>
+<pre>
+python -c "import torch; print(torch.__version__); print(torch.version.cuda); print(torch.backends.cudnn.version())"
+</pre>
+
+<h3>🛠 10. Eğer GPU Kullanımı Yoksa, Mevcut PyTorch Sürümünü Kaldır</h3>
+<pre>
+pip uninstall torch torchvision torchaudio -y
+</pre>
+
+<h3>✅ 11. PyTorch'un Tamamen Silindiğini Test Et</h3>
+<pre>
+python -c "import torch; print(torch.__version__); print(torch.version.cuda)"
+</pre>
+
+<h3>🔄 12. GPU Destekli PyTorch Sürümünü Kur</h3>
+<p><a href="https://pytorch.org/get-started/locally/">PyTorch'un resmi sitesinden</a> uygun CUDA versiyonunu seç ve yükle.</p>
+<pre>
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126
+</pre>
+
+<h3>🎬 13. Video ile Ses Efekti Üretme</h3>
+<p>Son olarak, videonu <code>demo.py</code> dosyasının yanına koy. Eğer video dosyası belirtmezsen, <strong>prompt</strong> kısmında yazan ses efekti oluşturulur. Ancak en iyi sonucu almak için video ile birlikte bir <strong>prompt</strong> ve <strong>negative prompt</strong> girmeni öneririm.</p>
+<pre>
+python demo.py --video v4.mp4 --prompt "tools" --negative_prompt "music"
+</pre>
+
+
+<div align="center">
 <p align="center">
   <h2>MMAudio</h2>
   <a href="https://arxiv.org/abs/2412.15322">Paper</a> | <a href="https://hkchengrex.github.io/MMAudio">Webpage</a> | <a href="https://huggingface.co/hkchengrex/MMAudio/tree/main">Models</a> | <a href="https://huggingface.co/spaces/hkchengrex/MMAudio"> Huggingface Demo</a> | <a href="https://colab.research.google.com/drive/1TAaXCY2-kPk4xE4PwKB3EqFbSnkUuzZ8?usp=sharing">Colab Demo</a> | <a href="https://replicate.com/zsxkib/mmaudio">Replicate Demo</a>
